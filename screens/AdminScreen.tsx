@@ -32,6 +32,9 @@ export default function AdminScreen() {
   const [executives, setExecutives] = useState<Record<string, Executive>>({});
   const [markerCoords, setMarkerCoords] = useState<Record<string, [number, number]>>({});
   const animatedCoords = useRef<Record<string, Animated.ValueXY>>({}).current;
+//   const [mapLoaded, setMapLoaded] = useState(false);
+// const cameraRef = useRef(null);
+
 
   useEffect(() => {
     if (Platform.OS === 'android') {
@@ -120,31 +123,37 @@ export default function AdminScreen() {
 
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        mapStyle="https://api.maptiler.com/maps/streets/style.json?key=dBKxeA01UYC6scsnashk"
-      >
-        <Camera
-          zoomLevel={5}
-          centerCoordinate={[78.9629, 20.5937]} // India center
-        />
+     <MapView
+  style={styles.map}
+  mapStyle="https://api.maptiler.com/maps/streets/style.json?key=dBKxeA01UYC6scsnashk"
+  // onDidFinishLoadingMap={() => setMapLoaded(true)}
+>
+  {/* {mapLoaded && (
+    <Camera
+      ref={cameraRef}
+      zoomLevel={15}
+      centerCoordinate={[80.2524, 13.05]} // or center of first executive
+    />
+  )} */}
 
-        {Object.values(executives).map((exec) => {
-          const coord = markerCoords[exec._id];
-          if (!exec.currentLocation || !coord) return null;
+  {Object.values(executives).map((exec) => {
+    const coord = markerCoords[exec._id];
+    if (!exec.currentLocation || !coord) return null;
 
-          return (
-            <MarkerView key={exec._id} coordinate={coord}>
-              <Animated.View style={styles.annotationContainer}>
-                <View style={styles.marker} />
-                <View style={styles.labelContainer}>
-                  <Text style={styles.label}>{exec.name}</Text>
-                </View>
-              </Animated.View>
-            </MarkerView>
-          );
-        })}
-      </MapView>
+    return (
+      <MarkerView key={exec._id} coordinate={coord}>
+        <Animated.View style={styles.annotationContainer}>
+          <View style={styles.marker} />
+          <View style={styles.labelContainer}>
+            <Text style={styles.label}>{exec.name}</Text>
+            <Text style={styles.label}>{exec.status}</Text>
+          </View>
+        </Animated.View>
+      </MarkerView>
+    );
+  })}
+</MapView>
+
     </View>
   );
 }
